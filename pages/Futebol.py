@@ -152,6 +152,7 @@ def analisar_over_under_gols(data):
 st.set_page_config(layout="wide")
 st.title('Análise de Futebol Pré Live com Odds')
 st.subheader('Dados das temporadas européias entre 2016-2024')
+st.subheader('Dados do Brasileirão e J-League (Japão)  2012-2023')
 
 data = load_data('FootballData.csv')
 
@@ -299,6 +300,43 @@ with col3:
         unsafe_allow_html=True
     )
 
+# Calcular e exibir a tabela de resultados mais frequentes
+score_counts = count_score_frequencies(filtered_data)
+display_score_results(score_counts)
+
+OverGolsdata = criar_colunas_over_under_gols(filtered_data)
+resultados_over_under_gols = analisar_over_under_gols(OverGolsdata)
+
+st.header('Análise de Over e Under Gols')
+
+# Seção de Over Gols
+st.subheader('Análise de Over Gols')
+cols_over = st.columns(4)
+for i, over in enumerate([0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]):
+    with cols_over[i % 4]:  # Distribuindo as colunas em múltiplas linhas
+        color = "#04b846"  # Gradiente de cor
+        st.markdown(create_metric(
+            f"Over {over}",
+            f"{resultados_over_under_gols[f'Over_{over}']['Ocorrência']}",
+            f"{resultados_over_under_gols[f'Over_{over}']['Frequência (%)']}%",
+            f"{resultados_over_under_gols[f'Over_{over}']['Odds']}",
+            color
+        ), unsafe_allow_html=True)
+
+# Seção de Under Gols
+st.subheader('Análise de Under Gols')
+cols_under = st.columns(4)
+for i, under in enumerate([0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]):
+    with cols_under[i % 4]:  # Distribuindo as colunas em múltiplas linhas
+        color = "#FF6347"  # Gradiente de cor
+        st.markdown(create_metric(
+            f"Under {under}",
+            f"{resultados_over_under_gols[f'Under_{under}']['Ocorrência']}",
+            f"{resultados_over_under_gols[f'Under_{under}']['Frequência (%)']}%",
+            f"{resultados_over_under_gols[f'Under_{under}']['Odds']}",
+            color
+        ), unsafe_allow_html=True)
+
 # Exibir Métricas Ofensivas e Defensivas
 st.subheader("Médias de Ataque e Defesa")
 
@@ -339,48 +377,12 @@ with col3:
     st.markdown("</div>", unsafe_allow_html=True)
 
 
-# Calcular e exibir a tabela de resultados mais frequentes
-score_counts = count_score_frequencies(filtered_data)
-display_score_results(score_counts)
-
-OverGolsdata = criar_colunas_over_under_gols(filtered_data)
-resultados_over_under_gols = analisar_over_under_gols(OverGolsdata)
-
-st.header('Análise de Over e Under Gols')
-
-# Seção de Over Gols
-st.subheader('Análise de Over Gols')
-cols_over = st.columns(4)
-for i, over in enumerate([0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]):
-    with cols_over[i % 4]:  # Distribuindo as colunas em múltiplas linhas
-        color = "#04b846"  # Gradiente de cor
-        st.markdown(create_metric(
-            f"Over {over}",
-            f"{resultados_over_under_gols[f'Over_{over}']['Ocorrência']}",
-            f"{resultados_over_under_gols[f'Over_{over}']['Frequência (%)']}%",
-            f"{resultados_over_under_gols[f'Over_{over}']['Odds']}",
-            color
-        ), unsafe_allow_html=True)
-
-# Seção de Under Gols
-st.subheader('Análise de Under Gols')
-cols_under = st.columns(4)
-for i, under in enumerate([0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]):
-    with cols_under[i % 4]:  # Distribuindo as colunas em múltiplas linhas
-        color = "#FF6347"  # Gradiente de cor
-        st.markdown(create_metric(
-            f"Under {under}",
-            f"{resultados_over_under_gols[f'Under_{under}']['Ocorrência']}",
-            f"{resultados_over_under_gols[f'Under_{under}']['Frequência (%)']}%",
-            f"{resultados_over_under_gols[f'Under_{under}']['Odds']}",
-            color
-        ), unsafe_allow_html=True)
 
 # Exibir dados filtrados
 st.subheader('Dados filtrados')
 st.dataframe(filtered_data)
 
 # Opção para download dos dados filtrados
-st.subheader('Baixar dados filtrados')
-csv = filtered_data.to_csv(index=False).encode('utf-8')
-st.download_button(label="Baixar CSV", data=csv, file_name='dados_filtrados.csv', mime='text/csv')
+# st.subheader('Baixar dados filtrados')
+# csv = filtered_data.to_csv(index=False).encode('utf-8')
+# st.download_button(label="Baixar CSV", data=csv, file_name='dados_filtrados.csv', mime='text/csv')
